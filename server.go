@@ -8,7 +8,7 @@ import (
 // PlayerStore is an interface implementing GetPlyrScore
 type PlayerStore interface {
 	GetPlayerScore(name string) int
-	//PostPlayerScore(name string) int
+	RecordWin(name string)
 }
 
 // PlayerServer is a struct with a store representing PlayerStore
@@ -42,6 +42,7 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *PlayerServer) processWin(w http.ResponseWriter) {
-		w.WriteHeader(http.StatusAccepted)
+	p.store.RecordWin("Bob")
+	w.WriteHeader(http.StatusAccepted)
 }
 
