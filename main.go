@@ -5,8 +5,16 @@ import (
 	"net/http"
 )
 
+// InMemoryPlayerStore is a struct for holding player scores
+type InMemoryPlayerStore struct{}
+
+// GetPlayerScore queries a name on an InMemPlayStr and returns score
+func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
+	return 123
+}
+
 func main() {
-	server := &PlayerServer{}
+	server := &PlayerServer{&InMemoryPlayerStore{}}
 	
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("could not listen on port 5000 %v", err)
