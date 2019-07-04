@@ -3,7 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"encoding/json"
 )
+
+type Player struct {
+	Name string
+	Wins int
+}
 
 // PlayerStore is an interface implementing GetPlyrScore
 type PlayerStore interface {
@@ -17,6 +23,7 @@ type PlayerServer struct {
 	http.Handler
 }
 
+// NewPlayerServer instantiates a new PlayerServer
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
 
@@ -32,6 +39,12 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	leagueTable := []Player{
+		{"Chris", 20},
+	}
+
+	json.NewEncoder(w).Encode(leagueTable)
+
 	w.WriteHeader(http.StatusOK)
 }
 
