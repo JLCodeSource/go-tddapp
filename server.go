@@ -16,29 +16,30 @@ type PlayerServer struct {
 	store PlayerStore
 }
 
-// PlayerServer is a http server that provides the http.Method routing
+// PlayerServer is a http server that manages routing
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	router := http.NewServeMux()
 
-	router.Handle("/league", 
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		}))
-
-	router.Handle("/players/", 
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			player := r.URL.Path[len("/players/"):]
-
-			switch r.Method {
-			case http.MethodPost:
-				p.postWin(w, player)
-			case http.MethodGet:
-				p.getScore(w, player)
-			}
-		}))
+	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
 	
 	router.ServeHTTP(w, r)
+}
+
+func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+}
+
+func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
+	player := r.URL.Path[len("/players/"):]
+
+	switch r.Method {
+	case http.MethodPost:
+		p.postWin(w, player)
+	case http.MethodGet:
+		p.getScore(w, player)
+	}
 }
 
 func (p *PlayerServer) getScore(w http.ResponseWriter, player string) {
