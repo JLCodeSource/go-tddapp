@@ -59,12 +59,6 @@ func TestGETPlayers(t *testing.T) {
 	})
 }
 
-func newGetScoreRequest(name string) *http.Request {
-	path := "/players/" + name
-	req, _ := http.NewRequest(http.MethodGet, path, nil)
-	return req
-}
-
 func TestPOSTWins(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
@@ -92,6 +86,12 @@ func TestPOSTWins(t *testing.T) {
 		}
 	})
 
+}
+
+func newGetScoreRequest(name string) *http.Request {
+	path := "/players/" + name
+	req, _ := http.NewRequest(http.MethodGet, path, nil)
+	return req
 }
 
 func newPostWinRequest(name string) *http.Request {
