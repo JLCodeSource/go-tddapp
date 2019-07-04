@@ -1,14 +1,14 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 )
 
 // PlayerStore is an interface implementing GetPlyrScore
 type PlayerStore interface {
 	GetPlayerScore(name string) int
-	RecordWin(name string)
+	PostRecordWin(name string)
 }
 
 // PlayerServer is a struct with a store representing PlayerStore
@@ -16,35 +16,33 @@ type PlayerServer struct {
 	store PlayerStore
 }
 
-
 // PlayerServer is a http server that provides the http.Method routing
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	
+
+	player := r.URL.Path[len("/players/"):]
+
 	switch r.Method {
 	case http.MethodPost:
-		p.processWin(w, r)
+		p.postWin(w, player)
 	case http.MethodGet:
-		p.showScore(w, r)
+		p.getScore(w, player)
 	}
 }
 
-func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
-	player := r.URL.Path[len("/players/"):]
+func (p *PlayerServer) getScore(w http.ResponseWriter, player string) {
 
 	score := p.store.GetPlayerScore(player)
 
 	if score == 0 {
-	w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
 	}
-	
+
 	fmt.Fprint(w, score)
 
 }
 
-func (p *PlayerServer) processWin(w http.ResponseWriter, r *http.Request) {
-	player := r.URL.Path[len("/players/"):]
+func (p *PlayerServer) postWin(w http.ResponseWriter, player string) {
 
-	p.store.RecordWin(player)
+	p.store.PostRecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
-
