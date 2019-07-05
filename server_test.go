@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"encoding/json"
 	"reflect"
 	"io"
+	"strings"
 )
 
 type StubPlayerStore struct {
@@ -124,6 +124,25 @@ func TestLeague(t *testing.T) {
 	})
 }
 
+func TestFileSystemStore(t *testing.T) {
+	t.Run("/league from a reader", func(t *testing.T) {
+		database := strings.NewReader(`[
+			{"Name": "Cleo", "Wins": 10},
+			{"Name": "Chris", "Wins": 33}]`)
+
+		store := FileSystemPlayerStore{database}
+
+		got := store.GetLeague()
+
+		want := []Player{
+			{"Cleo", 10},
+			{"Chris", 33},
+		}
+
+		assertLeague(t, got, want)
+	})
+}
+
 func newGetScoreRequest(name string) *http.Request {
 	path := "/players/" + name
 	req, _ := http.NewRequest(http.MethodGet, path, nil)
@@ -141,16 +160,10 @@ func newLeagueRequest() *http.Request {
 	return req
 }
 
-func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
+func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
 	t.Helper()
-	err := json.NewDecoder(body).Decode(&league)
-
-	if err != nil {
-		t.Fatalf("Unable to parse response from server '%s' into slice of Player, '%v'",
-			body, err)
-	}
-
-	return
+	league, _ := NewLeague(body)
+	return league
 } 
 
 func assertStatus(t *testing.T, got, want int) {
