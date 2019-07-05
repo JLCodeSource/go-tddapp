@@ -9,8 +9,6 @@ import (
 	"io"
 )
 
-const jsonContentType = "application/json"
-
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string

@@ -6,13 +6,15 @@ import (
 	"encoding/json"
 )
 
+const jsonContentType = "application/json"
+
 // Player stores a name with number of wins
 type Player struct {
 	Name string
 	Wins int
 }
 
-// PlayerStore is an interface implementing GetPlyrScore
+// PlayerStore stores score information about players
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	PostRecordWin(name string)
@@ -44,6 +46,7 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	
 	w.Header().Set("content-type", "application/json")
 	json.NewEncoder(w).Encode(p.store.GetLeague())
+	w.WriteHeader(http.StatusOK)
 
 	
 }
