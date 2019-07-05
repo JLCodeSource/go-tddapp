@@ -124,6 +124,18 @@ func TestLeague(t *testing.T) {
 	})
 }
 
+func newGetScoreRequest(name string) *http.Request {
+	path := "/players/" + name
+	req, _ := http.NewRequest(http.MethodGet, path, nil)
+	return req
+}
+
+func newPostWinRequest(name string) *http.Request {
+	path := "/players/" + name
+	req, _ := http.NewRequest(http.MethodPost, path, nil)
+	return req
+}
+
 func newLeagueRequest() *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
 	return req
@@ -140,6 +152,20 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
 
 	return
 } 
+
+func assertStatus(t *testing.T, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("response status is wrong - got status %d, want %d", got, want)
+	}
+}
+
+func assertResponseBody(t *testing.T, got, want string) {
+	t.Helper()
+	if got != want {
+		t.Errorf("response body is wrong - got '%s', want '%s'", got, want)
+	}
+}
 
 func assertLeague(t *testing.T, got, want []Player) {
 	t.Helper()
@@ -160,29 +186,3 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 	}
 
 } 
-
-func newGetScoreRequest(name string) *http.Request {
-	path := "/players/" + name
-	req, _ := http.NewRequest(http.MethodGet, path, nil)
-	return req
-}
-
-func newPostWinRequest(name string) *http.Request {
-	path := "/players/" + name
-	req, _ := http.NewRequest(http.MethodPost, path, nil)
-	return req
-}
-
-func assertStatus(t *testing.T, got, want int) {
-	t.Helper()
-	if got != want {
-		t.Errorf("response status is wrong - got status %d, want %d", got, want)
-	}
-}
-
-func assertResponseBody(t *testing.T, got, want string) {
-	t.Helper()
-	if got != want {
-		t.Errorf("response body is wrong - got '%s', want '%s'", got, want)
-	}
-}
