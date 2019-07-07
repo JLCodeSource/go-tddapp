@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 )
 
-const jsonContentType = "application/json"
-
 // Player stores a name with number of wins
 type Player struct {
 	Name string

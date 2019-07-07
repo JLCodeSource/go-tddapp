@@ -7,6 +7,7 @@ import (
 	"sort"
 )
 
+// FileSystemPlayerStore is a json.Encoder that stores a League of Players[]
 type FileSystemPlayerStore struct {
 	database *json.Encoder
 	league League
@@ -14,8 +15,13 @@ type FileSystemPlayerStore struct {
 
 func initializePlayerDBFile(file *os.File) error {
 
-	file.Seek(0,0)
+	_, err := file.Seek(0,0)
 	
+	if err != nil {
+		return fmt.Errorf("problem seeking on file %s, %v",
+			file.Name(), err)
+	}
+
 	info, err := file.Stat()
 
 	if err != nil {
@@ -32,6 +38,7 @@ func initializePlayerDBFile(file *os.File) error {
 
 }
 
+// NewFileSystemPlayerStore is a constructor method for the FielSystemPlayerStore
 func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 	
 	err := initializePlayerDBFile(file)
@@ -53,6 +60,7 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 	}, nil
 }
 
+// GetLeague is a method on a FSPlayerStore that sorts the League
 func (f *FileSystemPlayerStore) GetLeague() League {
 
 	sort.Slice(f.league, func(i, j int) bool {
@@ -61,6 +69,7 @@ func (f *FileSystemPlayerStore) GetLeague() League {
 	return f.league
 }
 
+// GetPlayerScore returns a player's score (or zero if they don't exist)
 func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
 	
 	player := f.GetLeague().Find(name)
@@ -72,6 +81,7 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
 	return 0
 }
 
+// PostRecordWin increments a player's score (or creates the player if they don't exist)
 func (f *FileSystemPlayerStore) PostRecordWin(name string) {
 
 	player := f.league.Find(name)

@@ -6,8 +6,10 @@ import (
 	"encoding/json"
 )
 
+// League is an array of Players
 type League []Player
 
+// NewLeague is a constructor for a League
 func NewLeague(rdr io.Reader) ([]Player, error) {
 	
 	var l League
@@ -20,6 +22,7 @@ func NewLeague(rdr io.Reader) ([]Player, error) {
 	return l, err
 }
 
+// Find finds and returns a Player
 func (l League) Find(name string) *Player {
 	for i, p := range l {
 		if p.Name == name {

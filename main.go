@@ -10,7 +10,7 @@ const dbFileName = "game.db.json"
 
 func main() {
 
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0600)
 
 	if err != nil {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
