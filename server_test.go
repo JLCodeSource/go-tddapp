@@ -127,13 +127,26 @@ func TestLeague(t *testing.T) {
 
 func TestFileSystemStore(t *testing.T) {
 	
-	database, cleanDatabase := createTempFile(t, `[
+	database, cleanDatabase := createTempFile(t, "")
+	defer cleanDatabase()
+
+	t.Run("works with an empty file", func(t *testing.T) {
+
+		_, err := NewFileSystemPlayerStore(database)
+
+		assertNoError(t, err)
+
+	})
+
+	database, cleanDatabase = createTempFile(t, `[
 			{"Name": "Cleo", "Wins": 10},
 			{"Name": "Chris", "Wins": 33}]`)
 	defer cleanDatabase()
 
-	store := NewFileSystemPlayerStore(database)
+	store, err := NewFileSystemPlayerStore(database)
 	
+	assertNoError(t, err)
+
 	t.Run("/league from a reader", func(t *testing.T) {
 		t.Helper()
 
@@ -260,4 +273,12 @@ func assertScoreEquals(t *testing.T, got, want int) {
 	if got != want {
 		t.Errorf("got %d want %d", got, want)
 	}
+}
+
+func assertNoError(t *testing.T, err error) {
+
+	if err != nil {
+		t.Fatalf("didn't expect error but got one, %v", err)
+	}
+
 }
