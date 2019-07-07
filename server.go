@@ -18,7 +18,7 @@ type Player struct {
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	PostRecordWin(name string)
-	GetLeague() []Player
+	GetLeague() League
 }
 
 // PlayerServer is an HTTP interface for PlayerStore information
@@ -51,7 +51,7 @@ func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	
 }
 
-func (p *PlayerServer) GetLeague() []Player{
+func (p *PlayerServer) GetLeague() League{
 	return nil
 }
 
