@@ -6,7 +6,8 @@ import (
 	"testing"
 	"reflect"
 	"io"
-	"strings"
+	"io/ioutil"
+	"os"
 )
 
 type StubPlayerStore struct {
@@ -125,12 +126,16 @@ func TestLeague(t *testing.T) {
 }
 
 func TestFileSystemStore(t *testing.T) {
-	t.Run("/league from a reader", func(t *testing.T) {
-		database := strings.NewReader(`[
+	
+	database, cleanDatabase := createTempFile(t, `[
 			{"Name": "Cleo", "Wins": 10},
 			{"Name": "Chris", "Wins": 33}]`)
+	defer cleanDatabase()
 
-		store := FileSystemPlayerStore{database}
+	store := FileSystemPlayerStore{database}
+	
+	t.Run("/league from a reader", func(t *testing.T) {
+		t.Helper()
 
 		got := store.GetLeague()
 
@@ -145,6 +150,43 @@ func TestFileSystemStore(t *testing.T) {
 		got = store.GetLeague()
 		assertLeague(t, got, want)
 	})
+	t.Run("get player score", func(t *testing.T) {
+		t.Helper()
+
+		got := store.GetPlayerScore("Chris")
+
+		want := 33
+
+		assertScoreEquals(t, got, want)
+	})
+	t.Run("store wins for existing players", func(t *testing.T) {
+		store.PostRecordWin("Chris")
+
+		got := store.GetPlayerScore("Chris")
+		want := 34
+
+		assertScoreEquals(t, got, want)
+	})
+
+}
+
+func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+	t.Helper()
+
+	tmpFile, err := ioutil.TempFile("", "db")
+
+	if err != nil {
+		t.Fatalf("could not create temp file %v", err)
+	}
+
+	tmpFile.Write([]byte(initialData))
+
+	removeFile := func() {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+	}
+
+	return tmpFile, removeFile
 }
 
 func newGetScoreRequest(name string) *http.Request {
@@ -203,3 +245,12 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 	}
 
 } 
+
+func assertScoreEquals(t *testing.T, got, want int) {
+	
+	t.Helper()
+
+	if got != want {
+		t.Errorf("got %d want %d", got, want)
+	}
+}
