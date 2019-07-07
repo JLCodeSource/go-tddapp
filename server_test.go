@@ -147,14 +147,14 @@ func TestFileSystemStore(t *testing.T) {
 	
 	assertNoError(t, err)
 
-	t.Run("/league from a reader", func(t *testing.T) {
+	t.Run("/league from a reader sorted", func(t *testing.T) {
 		t.Helper()
 
 		got := store.GetLeague()
 
 		want := []Player{
-			{"Cleo", 10},
 			{"Chris", 33},
+			{"Cleo", 10},
 		}
 
 		assertLeague(t, got, want)
@@ -187,7 +187,7 @@ func TestFileSystemStore(t *testing.T) {
 		want := 1
 		assertScoreEquals(t, got, want)
 	})
-
+	
 }
 
 func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
