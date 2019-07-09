@@ -60,6 +60,27 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 	}, nil
 }
 
+func FileSystemStoreFromFile(path string) (*FileSystemPlayerStore, func(), error) {
+
+	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0600)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("problem opening %s %v", path, err)
+	}
+
+	closeFunc := func() {
+		db.Close()
+	}
+	store, err := NewFileSystemPlayerStore(db)
+
+	if err != nil {
+		return nil, nil, fmt.Errorf("problem creating file system player store, %v", err)
+	}
+
+	return store, closeFunc, nil
+
+}
+
 // GetLeague is a method on a FSPlayerStore that sorts the League
 func (f *FileSystemPlayerStore) GetLeague() League {
 
