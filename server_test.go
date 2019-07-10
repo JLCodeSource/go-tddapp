@@ -90,13 +90,15 @@ func TestLeague(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
+		league := getLeagueFromResponse(t, response.Body)
+
+		contentType := response.Result().Header.Get("content-type")
+
 		AssertStatus(t, response.Code, http.StatusOK)
 
-		AssertContentType(t, response, jsonContentType)
+		AssertContentType(t, contentType, jsonContentType)
 		
-		got := getLeagueFromResponse(t, response.Body)
-				
-		AssertLeague(t, got, wantedLeague)
+		AssertLeague(t, league, wantedLeague)
 	})
 }
 
@@ -123,7 +125,6 @@ func TestFileSystemStore(t *testing.T) {
 	AssertNoError(t, err)
 
 	t.Run("/league from a reader sorted", func(t *testing.T) {
-		t.Helper()
 
 		got := store.GetLeague()
 
@@ -139,7 +140,6 @@ func TestFileSystemStore(t *testing.T) {
 		AssertLeague(t, got, want)
 	})
 	t.Run("get player score", func(t *testing.T) {
-		t.Helper()
 
 		got := store.GetPlayerScore("Chris")
 

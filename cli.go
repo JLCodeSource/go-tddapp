@@ -12,6 +12,7 @@ type CLI struct {
 	in *bufio.Scanner
 }
 
+// NewCLI is a constructor for playerStore
 func NewCLI(store PlayerStore, in io.Reader) *CLI {
 	return &CLI {
 		playerStore: store,
