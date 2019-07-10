@@ -2,20 +2,20 @@ package poker
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"sort"
-	"fmt"
 )
 
 // FileSystemPlayerStore is a json.Encoder that stores a League of Players[]
 type FileSystemPlayerStore struct {
 	database *json.Encoder
-	league League
+	league   League
 }
 
 // NewFileSystemPlayerStore is a constructor method for the FielSystemPlayerStore
 func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
-	
+
 	err := initializePlayerDBFile(file)
 
 	if err != nil {
@@ -27,17 +27,17 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 	if err != nil {
 		return nil, ErrLoadingPlayerStore
 	}
-	
+
 	return &FileSystemPlayerStore{
-		database:json.NewEncoder(&tape{file}),
-		league:league,
+		database: json.NewEncoder(&tape{file}),
+		league:   league,
 	}, nil
 }
 
 func initializePlayerDBFile(file *os.File) error {
 
-	_, err := file.Seek(0,0)
-	
+	_, err := file.Seek(0, 0)
+
 	if err != nil {
 		return ErrFileSeek
 	}
@@ -53,7 +53,7 @@ func initializePlayerDBFile(file *os.File) error {
 		if err != nil {
 			return ErrFileWrite
 		}
-		_, err = file.Seek(0,0) 
+		_, err = file.Seek(0, 0)
 		if err != nil {
 			return ErrFileSeek
 		}
@@ -99,9 +99,9 @@ func (f *FileSystemPlayerStore) GetLeague() League {
 
 // GetPlayerScore returns a player's score (or zero if they don't exist)
 func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
-	
+
 	player := f.GetLeague().Find(name)
-	
+
 	if player != nil {
 		return player.Wins
 	}
@@ -115,7 +115,7 @@ func (f *FileSystemPlayerStore) PostRecordWin(name string) error {
 	player := f.league.Find(name)
 
 	if player != nil {
-			player.Wins++
+		player.Wins++
 	} else {
 		f.league = append(f.league, Player{name, 1})
 	}
@@ -125,6 +125,6 @@ func (f *FileSystemPlayerStore) PostRecordWin(name string) error {
 	if err != nil {
 		return ErrEncode
 	}
- 
+
 	return nil
 }

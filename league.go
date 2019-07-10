@@ -1,9 +1,9 @@
 package poker
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
-	"encoding/json"
 )
 
 // League is an array of Players
@@ -11,7 +11,7 @@ type League []Player
 
 // NewLeague is a constructor for a League
 func NewLeague(rdr io.Reader) ([]Player, error) {
-	
+
 	var l League
 	err := json.NewDecoder(rdr).Decode(&l)
 

@@ -1,22 +1,22 @@
 package poker
 
 import (
+	"bufio"
 	"io"
 	"strings"
-	"bufio"
 )
 
 // CLI is the playerstore and input reader for the commandline version
 type CLI struct {
 	playerStore PlayerStore
-	in *bufio.Scanner
+	in          *bufio.Scanner
 }
 
 // NewCLI is a constructor for playerStore
 func NewCLI(store PlayerStore, in io.Reader) *CLI {
-	return &CLI {
+	return &CLI{
 		playerStore: store,
-		in: bufio.NewScanner(in),
+		in:          bufio.NewScanner(in),
 	}
 }
 

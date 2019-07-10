@@ -1,8 +1,8 @@
 package poker
 
 import (
-	"testing"
 	"io/ioutil"
+	"testing"
 )
 
 func TestTape_Write(t *testing.T) {
@@ -13,7 +13,7 @@ func TestTape_Write(t *testing.T) {
 
 	tape.Write([]byte("abc"))
 
-	file.Seek(0,0)
+	file.Seek(0, 0)
 	newFileContents, _ := ioutil.ReadAll(file)
 
 	got := string(newFileContents)

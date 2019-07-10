@@ -1,9 +1,9 @@
 package poker
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-	"encoding/json"
 )
 
 // Player stores a name with number of wins
@@ -34,22 +34,21 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	router := http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
-	
+
 	p.Handler = router
 
 	return p
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	
+
 	w.Header().Set("content-type", "application/json")
 	json.NewEncoder(w).Encode(p.store.GetLeague())
 	w.WriteHeader(http.StatusOK)
 
-	
 }
 
-func (p *PlayerServer) GetLeague() League{
+func (p *PlayerServer) GetLeague() League {
 	return nil
 }
 

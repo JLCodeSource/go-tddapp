@@ -1,15 +1,13 @@
 package poker
 
 import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
 	"io"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"testing"
 )
-
-
 
 func TestGETPlayers(t *testing.T) {
 
@@ -73,15 +71,15 @@ func TestPOSTWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	
+
 	t.Run("it returns league table as JSON", func(t *testing.T) {
-	
+
 		wantedLeague := []Player{
 			{"Cleo", 32},
 			{"Chris", 20},
 			{"Trevor", 12},
 		}
-	
+
 		store := StubPlayerStore{nil, nil, wantedLeague}
 		server := NewPlayerServer(&store)
 
@@ -97,13 +95,13 @@ func TestLeague(t *testing.T) {
 		AssertStatus(t, response.Code, http.StatusOK)
 
 		AssertContentType(t, contentType, jsonContentType)
-		
+
 		AssertLeague(t, league, wantedLeague)
 	})
 }
 
 func TestFileSystemStore(t *testing.T) {
-	
+
 	database, cleanDatabase := createTempFile(t, "")
 	defer cleanDatabase()
 
@@ -121,7 +119,7 @@ func TestFileSystemStore(t *testing.T) {
 	defer cleanDatabase()
 
 	store, err := NewFileSystemPlayerStore(database)
-	
+
 	AssertNoError(t, err)
 
 	t.Run("/league from a reader sorted", func(t *testing.T) {
@@ -162,7 +160,7 @@ func TestFileSystemStore(t *testing.T) {
 		want := 1
 		AssertScoreEquals(t, got, want)
 	})
-	
+
 }
 
 func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
@@ -205,5 +203,4 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) []Player {
 	t.Helper()
 	league, _ := NewLeague(body)
 	return league
-} 
-
+}

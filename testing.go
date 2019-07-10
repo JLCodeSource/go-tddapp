@@ -1,8 +1,8 @@
 package poker
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
 // jsonContentType refers to the JSON http content header
@@ -12,7 +12,7 @@ const jsonContentType = "application/json"
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league League
+	league   League
 }
 
 // GetPlayerScore returns the spy store score
@@ -55,7 +55,7 @@ func AssertContentType(t *testing.T, got, want string) {
 		t.Errorf("response did not have content-type of application/json, got %v, want %v",
 			got, want)
 	}
-} 
+}
 
 // AssertLeague asserts the content of the League
 func AssertLeague(t *testing.T, got, want League) {
@@ -78,7 +78,7 @@ func AssertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
 
 	gotWinner := store.winCalls[0]
 	if gotWinner != winner {
-		t.Errorf("did not store correct winner got '%s' want '%s", 
+		t.Errorf("did not store correct winner got '%s' want '%s",
 			gotWinner, winner)
 	}
 }
