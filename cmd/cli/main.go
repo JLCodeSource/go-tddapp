@@ -10,7 +10,7 @@ import (
 const dbFileName = "game.db.json"
 
 func main() {
-	
+
 	store, close, err := poker.FileSystemStoreFromFile(dbFileName)
 
 	if err != nil {
