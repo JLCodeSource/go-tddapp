@@ -7,41 +7,6 @@ import (
 	"fmt"
 )
 
-const (
-
-	// ErrDBInitialize means that there was an error initilizing the db file
-	ErrDBInitialize = FileSystemPlayerStoreErr("problem initilizing player db file")
-
-	// ErrLoadingPlayerStore means there was an error loading the player store from file
-	ErrLoadingPlayerStore = FileSystemPlayerStoreErr("problem loading player store from file")
-
-	// ErrFileSeek means that there was an error seeking on file
-	ErrFileSeek = FileSystemPlayerStoreErr("problem seeking on file")
-
-	// ErrFileInfo means that there was an error getting file info from file
-	ErrFileInfo = FileSystemPlayerStoreErr("problem getting file info from file")
-
-	// ErrFileWrite means that there was an error writing to file
-	ErrFileWrite = FileSystemPlayerStoreErr("problem writing to file")
-
-	// ErrFileOpen means that there was an error opening the file
-	ErrFileOpen = FileSystemPlayerStoreErr("problem opening file")
-
-	// ErrCreateStore means there was an error creating the player store
-	ErrCreateStore = FileSystemPlayerStoreErr("problem creating file system player store")
-
-	// ErrFileClose means there was an error closing the file
-	ErrFileClose = FileSystemPlayerStoreErr("problem closing file")
-)
-
-// FileSystemPlayerStoreErr are errors that can happen when interacting with FSPS
-type FileSystemPlayerStoreErr string
-
-// The Error func returns the FSPS Error
-func (e FileSystemPlayerStoreErr) Error() string {
-	return string(e)
-}
-
 // FileSystemPlayerStore is a json.Encoder that stores a League of Players[]
 type FileSystemPlayerStore struct {
 	database *json.Encoder
