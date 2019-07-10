@@ -73,8 +73,8 @@ func FileSystemStoreFromFile(filename string) (*FileSystemPlayerStore, func(), e
 	}
 
 	closeFunc := func() {
-		err := db.Close()
-		if err != nil {
+		e := db.Close()
+		if e != nil {
 			fmt.Errorf(string(ErrFileClose))
 		}
 	}
@@ -110,7 +110,7 @@ func (f *FileSystemPlayerStore) GetPlayerScore(name string) int {
 }
 
 // PostRecordWin increments a player's score (or creates the player if they don't exist)
-func (f *FileSystemPlayerStore) PostRecordWin(name string) {
+func (f *FileSystemPlayerStore) PostRecordWin(name string) error {
 
 	player := f.league.Find(name)
 
@@ -119,5 +119,12 @@ func (f *FileSystemPlayerStore) PostRecordWin(name string) {
 	} else {
 		f.league = append(f.league, Player{name, 1})
 	}
-	f.database.Encode(f.league)
+
+	err := f.database.Encode(f.league)
+
+	if err != nil {
+		return ErrEncode
+	}
+ 
+	return nil
 }

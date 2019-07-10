@@ -27,8 +27,9 @@ func (s *StubPlayerStore) GetLeague() League {
 }
 
 // PostRecordWin adds to the wins in winCalls
-func (s *StubPlayerStore) PostRecordWin(name string) {
+func (s *StubPlayerStore) PostRecordWin(name string) error {
 	s.winCalls = append(s.winCalls, name)
+	return nil
 }
 
 // AssertStatus is an assertion for http response status

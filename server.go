@@ -15,7 +15,7 @@ type Player struct {
 // PlayerStore stores score information about players
 type PlayerStore interface {
 	GetPlayerScore(name string) int
-	PostRecordWin(name string)
+	PostRecordWin(name string) error
 	GetLeague() League
 }
 
