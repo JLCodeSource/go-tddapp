@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"sort"
+	"fmt"
 )
 
 const (
@@ -29,6 +30,8 @@ const (
 	// ErrCreateStore means there was an error creating the player store
 	ErrCreateStore = FileSystemPlayerStoreErr("problem creating file system player store")
 
+	// ErrFileClose means there was an error closing the file
+	ErrFileClose = FileSystemPlayerStoreErr("problem closing file")
 )
 
 // FileSystemPlayerStoreErr are errors that can happen when interacting with FSPS
@@ -105,7 +108,10 @@ func FileSystemStoreFromFile(filename string) (*FileSystemPlayerStore, func(), e
 	}
 
 	closeFunc := func() {
-		db.Close()
+		err := db.Close()
+		if err != nil {
+			fmt.Errorf(string(ErrFileClose))
+		}
 	}
 	store, err := NewFileSystemPlayerStore(db)
 
@@ -148,7 +154,5 @@ func (f *FileSystemPlayerStore) PostRecordWin(name string) {
 	} else {
 		f.league = append(f.league, Player{name, 1})
 	}
-
 	f.database.Encode(f.league)
-
 }
