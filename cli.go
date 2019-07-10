@@ -14,10 +14,6 @@ type CLI struct {
 	alerter		BlindAlerter
 }
 
-type BlindAlerter interface {
-	ScheduledAlertAt(duration time.Duration, amount int)
-}
-
 // NewCLI is a constructor for playerStore
 func NewCLI(store PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
 	return &CLI{
