@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-// Game interface is what starts and finishes games
+// Game interface is what starts and finishes games within the CLI
 type Game interface {
 	Start(numberOfPlayers int)
 	Finish(winner string)
@@ -16,7 +16,7 @@ type Game interface {
 
 // CLI is the playerstore and input reader for the commandline version
 type CLI struct {
-	PlayerStore PlayerStore
+	//PlayerStore PlayerStore
 	in          *bufio.Scanner
 	out			io.Writer
 	game		Game
@@ -24,6 +24,7 @@ type CLI struct {
 
 // PlayerPrompt is the prompt for number of players
 const PlayerPrompt = "Please enter the number of players: "
+
 
 // NewCLI is a constructor for playerStore
 func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
@@ -40,7 +41,12 @@ func (cli *CLI) PlayPoker() {
 	fmt.Fprint(cli.out, PlayerPrompt)
 
 	numberOfPlayersInput := cli.readLine()
-	numberOfPlayers, _ := strconv.Atoi(strings.Trim(numberOfPlayersInput, "\n"))
+	numberOfPlayers, err := strconv.Atoi(strings.Trim(numberOfPlayersInput, "\n"))
+
+	if err != nil {
+		fmt.Fprint(cli.out, ErrBadPlayerInput)
+		return
+	}
 
 	cli.game.Start(numberOfPlayers)
 

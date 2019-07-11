@@ -8,15 +8,19 @@ import (
 )
 
 type GameSpy struct {
+	StartCalled bool
 	StartedWith int
+	FinishCalled bool
 	FinishedWith string
 }
 
 func (g *GameSpy) Start(numberOfPlayers int) {
+	g.StartCalled = true
 	g.StartedWith = numberOfPlayers
 }
 
 func (g *GameSpy) Finish(winner string) {
+	g.FinishCalled = true
 	g.FinishedWith = winner
 }
 
@@ -73,6 +77,34 @@ func TestCLI(t *testing.T) {
 		}
 	})
 
+	t.Run("prints error on non-numeric value entered + does not start", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		in := strings.NewReader("blah\n")
+		game := &GameSpy{}
 
+		cli := poker.NewCLI(in, stdout, game)
+		cli.PlayPoker()
+
+		if game.StartCalled {
+			t.Errorf("game should not have started")
+		}
+
+		gotPrompt := stdout.String()
+
+		wantPrompt := poker.PlayerPrompt + poker.ErrBadPlayerInput
+
+		if gotPrompt != wantPrompt {
+			t.Errorf("got '%s', want '%s'", gotPrompt, wantPrompt)
+		}
+	})
+}
+
+func assertMessageSentToUser(t *testing.T, stdout *bytes.Buffer, messages ...string) {
+	t.Helper()
+	want := strings.Join(messages, "")
+	got := stdout.String()
+	if got != want {
+		t.Errorf("got '%s' sent to stdout but expected %+v", got, want)
+	}
 }
 
