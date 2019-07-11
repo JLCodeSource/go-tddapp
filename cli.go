@@ -16,6 +16,7 @@ type CLI struct {
 	game		*Game
 }
 
+// PlayerPrompt is the prompt for number of players
 const PlayerPrompt = "Please enter the number of players: "
 
 // NewCLI is a constructor for playerStore

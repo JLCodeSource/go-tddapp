@@ -10,21 +10,23 @@ import (
 )
 
 
-type scheduledAlert struct {
+// ScheduledAlert is a struct containing the time and amount of an alert
+type ScheduledAlert struct {
 	at time.Duration
 	amount int
 }
 
-func (s scheduledAlert) String() string {
+// String outputs the ScheduledAlert information
+func (s ScheduledAlert) String() string {
 	return fmt.Sprintf("%d chips at %v", s.amount, s.at)
 }
 
 type SpyBlindAlerter struct {
-	alerts []scheduledAlert
+	alerts []ScheduledAlert
 }
 
 func (s *SpyBlindAlerter) ScheduledAlertAt(duration time.Duration, amount int) {
-	s.alerts = append(s.alerts, scheduledAlert{duration, amount})
+	s.alerts = append(s.alerts, ScheduledAlert{duration, amount})
 }
 
 func TestCLI(t *testing.T) {
@@ -69,7 +71,7 @@ func TestCLI(t *testing.T) {
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 
-		cases := []scheduledAlert {
+		cases := []ScheduledAlert {
 			{0 * time.Second, 100},
 			{10 * time.Minute, 200},
 			{20 * time.Minute, 300},
@@ -112,7 +114,7 @@ func TestCLI(t *testing.T) {
 			t.Errorf("got '%s', want '%s'", got, want)
 		}
 
-		cases := []scheduledAlert{
+		cases := []ScheduledAlert{
 			{0 * time.Second, 100},
 			{12 * time.Minute, 200},
 			{24 * time.Minute, 300},
@@ -133,10 +135,3 @@ func TestCLI(t *testing.T) {
 	})
 }
 
-func assertScheduledAlert(t *testing.T, got, want scheduledAlert) {
-	t.Helper()
-
-	if got != want {
-		t.Errorf("got %v, want %v", got, want)
-	}
-}

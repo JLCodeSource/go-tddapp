@@ -93,6 +93,7 @@ func AssertScoreEquals(t *testing.T, got, want int) {
 
 // AssertNoError asserts that there is no error
 func AssertNoError(t *testing.T, err error) {
+	t.Helper()
 	if err != nil {
 		t.Fatalf("didn't expect error but got one, %v", err)
 	}
