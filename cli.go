@@ -5,26 +5,33 @@ import (
 	"io"
 	"strings"
 	"time"
+	"fmt"
 )
+
+const PlayerPrompt = "Please enter the number of players: "
 
 // CLI is the playerstore and input reader for the commandline version
 type CLI struct {
 	playerStore PlayerStore
 	in          *bufio.Scanner
+	out			io.Writer
 	alerter		BlindAlerter
 }
 
 // NewCLI is a constructor for playerStore
-func NewCLI(store PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
+func NewCLI(store PlayerStore, in io.Reader, out io.Writer, alerter BlindAlerter) *CLI {
 	return &CLI{
 		playerStore: store,
 		in:          bufio.NewScanner(in),
+		out: 		out,
 		alerter:	alerter,
 	}
 }
 
 // PlayPoker is the method to update the poker scores
 func (cli *CLI) PlayPoker() {
+
+	fmt.Fprint(cli.out, PlayerPrompt)
 
 	cli.scheduleBlindAlerts()
 
