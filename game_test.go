@@ -10,12 +10,32 @@ import (
 var dummySpyAlerter = &SpyBlindAlerter{}
 var dummyPlayerStore = &poker.StubPlayerStore{}
 
+
+// ScheduledAlert is a struct containing the time and amount of an alert
+type ScheduledAlert struct {
+	at time.Duration
+	amount int
+}
+
+// String outputs the ScheduledAlert information
+func (s ScheduledAlert) String() string {
+	return fmt.Sprintf("%d chips at %v", s.amount, s.at)
+}
+
+type SpyBlindAlerter struct {
+	alerts []ScheduledAlert
+}
+
+func (s *SpyBlindAlerter) ScheduledAlertAt(duration time.Duration, amount int) {
+	s.alerts = append(s.alerts, ScheduledAlert{duration, amount})
+}
+
 func TestGame_Start(t *testing.T) {
 	t.Run("it schedules blind values for 5 players", func(t *testing.T) {
 		
 		blindAlerter := &SpyBlindAlerter{}
 		
-		game := poker.NewGame(blindAlerter, dummyPlayerStore)
+		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore)
 
 		game.Start(5)
 		
@@ -40,7 +60,7 @@ func TestGame_Start(t *testing.T) {
 	t.Run("it schedules alerts for 7 players", func(t *testing.T) {
 		
 		blindAlerter := &SpyBlindAlerter{}
-		game := poker.NewGame(blindAlerter, dummyPlayerStore)
+		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore)
 
 		game.Start(7)
 		
@@ -58,7 +78,7 @@ func TestGame_Start(t *testing.T) {
 
 func Test_Finish(t *testing.T) {
 	store := &poker.StubPlayerStore{}
-	game := poker.NewGame(dummySpyAlerter, store)
+	game := poker.NewTexasHoldEm(dummySpyAlerter, store)
 	winner := "Ruth"
 
 	game.Finish(winner)

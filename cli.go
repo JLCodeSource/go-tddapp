@@ -8,18 +8,25 @@ import (
 	"strconv"
 )
 
+// Game interface is what starts and finishes games
+type Game interface {
+	Start(numberOfPlayers int)
+	Finish(winner string)
+}
+
 // CLI is the playerstore and input reader for the commandline version
 type CLI struct {
+	PlayerStore PlayerStore
 	in          *bufio.Scanner
 	out			io.Writer
-	game		*Game
+	game		Game
 }
 
 // PlayerPrompt is the prompt for number of players
 const PlayerPrompt = "Please enter the number of players: "
 
 // NewCLI is a constructor for playerStore
-func NewCLI(in io.Reader, out io.Writer, game *Game) *CLI {
+func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
 	return &CLI{
 		in:          bufio.NewScanner(in),
 		out: 		out,

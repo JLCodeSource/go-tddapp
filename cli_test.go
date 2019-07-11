@@ -4,62 +4,75 @@ import (
 	"github.com/vetch101/go-tddapp"
 	"strings"
 	"testing"
-	"time"
-	"fmt"
 	"bytes"
 )
 
-
-// ScheduledAlert is a struct containing the time and amount of an alert
-type ScheduledAlert struct {
-	at time.Duration
-	amount int
+type GameSpy struct {
+	StartedWith int
+	FinishedWith string
 }
 
-// String outputs the ScheduledAlert information
-func (s ScheduledAlert) String() string {
-	return fmt.Sprintf("%d chips at %v", s.amount, s.at)
+func (g *GameSpy) Start(numberOfPlayers int) {
+	g.StartedWith = numberOfPlayers
 }
 
-type SpyBlindAlerter struct {
-	alerts []ScheduledAlert
+func (g *GameSpy) Finish(winner string) {
+	g.FinishedWith = winner
 }
 
-func (s *SpyBlindAlerter) ScheduledAlertAt(duration time.Duration, amount int) {
-	s.alerts = append(s.alerts, ScheduledAlert{duration, amount})
-}
 
 func TestCLI(t *testing.T) {
 
-	
-	var dummySpyAlerter = &SpyBlindAlerter{}
 	var dummyStdOut = &bytes.Buffer{}
 
+	t.Run("it prompts the user to enter the number of players and starts the game", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		in := strings.NewReader("7\n")
+		game := &GameSpy{}
 
-	t.Run("record chris win from user input", func(t *testing.T) {
+		cli := poker.NewCLI(in, stdout, game)
+		cli.PlayPoker()
 
-		in := strings.NewReader("5\nChris wins\n")
-		playerStore := &poker.StubPlayerStore{}
-		game := poker.NewGame(dummySpyAlerter, playerStore)
+		gotPrompt := stdout.String()
+		wantPrompt := poker.PlayerPrompt
+
+		if gotPrompt != wantPrompt {
+			t.Errorf("got '%s', want '%s'", gotPrompt, wantPrompt)
+		}
+
+		if game.StartedWith != 7 {
+			t.Errorf("wanted Start called with 7 but got %d", game.StartedWith)
+		}
+
+	})
+
+	t.Run("finish game with Chris as winner", func(t *testing.T) {
+
+		in := strings.NewReader("1\nChris wins\n")
+		game := &GameSpy{}
 
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 
-		poker.AssertPlayerWin(t, playerStore, "Chris")
+		if game.FinishedWith != "Chris" {
+			t.Errorf("expected called with 'Chris' but got %q", game.FinishedWith)
+		}
 
 	})
 
 	t.Run("record cleo win from user input", func(t *testing.T) {
 
-		in := strings.NewReader("5\nCleo wins\n")
-		playerStore := &poker.StubPlayerStore{}
-		game := poker.NewGame(dummySpyAlerter, playerStore)
-
+		in := strings.NewReader("1\nCleo wins\n")
+		game := &GameSpy{}
+		
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
 
-		poker.AssertPlayerWin(t, playerStore, "Cleo")
+		if game.FinishedWith != "Cleo" {
+			t.Errorf("expected called with 'Cleo' but got %q", game.FinishedWith)
+		}
 	})
+
 
 }
 
