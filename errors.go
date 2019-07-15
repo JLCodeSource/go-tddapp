@@ -31,7 +31,6 @@ const (
 
 	// ErrBadPlayerInput is an error for bad inputs 
 	ErrBadPlayerInput = "Bad value received for number of players, please try again with a number"
-
 )
 
 // Err are errors that can happen when interacting with FSPS

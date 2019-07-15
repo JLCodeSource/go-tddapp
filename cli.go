@@ -25,6 +25,8 @@ type CLI struct {
 // PlayerPrompt is the prompt for number of players
 const PlayerPrompt = "Please enter the number of players: "
 
+// BadWinnerInputMsg is the prompt for a bad winner input
+const BadWinnerInputMsg = "You entered an incorrect value. Please enter '{Playername} wins'"
 
 // NewCLI is a constructor for playerStore
 func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
@@ -51,12 +53,18 @@ func (cli *CLI) PlayPoker() {
 	cli.game.Start(numberOfPlayers)
 
 	winnerInput := cli.readLine()
+
+	if strings.Contains(winnerInput, " wins") == false {
+		fmt.Fprint(cli.out, BadWinnerInputMsg)
+	}
+
 	winner := extractWinner(winnerInput)
 
 	cli.game.Finish(winner)
 }
 
 func extractWinner(userInput string) string {
+
 	return strings.Replace(userInput, " wins", "", 1)
 }
 
