@@ -70,6 +70,19 @@ func TestPOSTWins(t *testing.T) {
 
 }
 
+func TestGame(t *testing.T) {
+	t.Run("GET /game returns 200", func(t *testing.T) {
+		server := NewPlayerServer(&StubPlayerStore{})
+
+		request := newGameRequest()
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		AssertStatus(t, response.Code, http.StatusOK)
+	})
+}
+
 func TestLeague(t *testing.T) {
 
 	t.Run("it returns league table as JSON", func(t *testing.T) {
@@ -192,6 +205,11 @@ func newPostWinRequest(name string) *http.Request {
 	path := "/players/" + name
 	req, _ := http.NewRequest(http.MethodPost, path, nil)
 	return req
+}
+
+func newGameRequest() *http.Request {
+	request, _ := http.NewRequest(http.MethodGet, "/game", nil)
+	return request
 }
 
 func newLeagueRequest() *http.Request {

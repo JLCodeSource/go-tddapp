@@ -21,7 +21,7 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 	return score
 }
 
-// Get League returns the spy store league of Players[]
+// GetLeague returns the spy store league of Players[]
 func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
