@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 	"bytes"
+	"io"
 )
 
 type GameSpy struct {
@@ -14,7 +15,7 @@ type GameSpy struct {
 	FinishedWith string
 }
 
-func (g *GameSpy) Start(numberOfPlayers int) {
+func (g *GameSpy) Start(numberOfPlayers int, alertsDestination io.Writer) {
 	g.StartCalled = true
 	g.StartedWith = numberOfPlayers
 }

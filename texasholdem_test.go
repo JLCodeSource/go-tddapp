@@ -36,10 +36,11 @@ func TestGame_Start(t *testing.T) {
 	t.Run("it schedules blind values for 5 players", func(t *testing.T) {
 		
 		blindAlerter := &SpyBlindAlerter{}
-		
-		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore, os.Stdout)
+		alertsDestination := os.Stdout
 
-		game.Start(5)
+		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore)
+		
+		game.Start(5, alertsDestination)
 		
 		cases := []ScheduledAlert {
 			{0 * time.Second, 100},
@@ -62,10 +63,10 @@ func TestGame_Start(t *testing.T) {
 	t.Run("it schedules alerts for 7 players", func(t *testing.T) {
 		
 		blindAlerter := &SpyBlindAlerter{}
-		to := os.Stdout
-		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore, to)
+		alertsDestination := os.Stdout
+		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore)
 
-		game.Start(7)
+		game.Start(7, alertsDestination)
 		
 		cases := []ScheduledAlert{
 			{0 * time.Second, 100},
@@ -81,10 +82,10 @@ func TestGame_Start(t *testing.T) {
 
 func Test_Finish(t *testing.T) {
 	store := &poker.StubPlayerStore{}
-	to := os.Stdout
-	game := poker.NewTexasHoldEm(dummySpyAlerter, store, to)
+	alertsDestination := os.Stdout
+	game := poker.NewTexasHoldEm(dummySpyAlerter, store)
 	winner := "Ruth"
-
+	game.Start(1, alertsDestination)
 	game.Finish(winner)
 	poker.AssertPlayerWin(t, store, winner)
 }
