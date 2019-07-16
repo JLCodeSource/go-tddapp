@@ -98,12 +98,11 @@ func TestGame(t *testing.T) {
 		}
 		defer ws.Close()
 
-		deadline := time.Now() 
-		deadline.Add(time.Duration(300) * time.Second)
-		if err := ws.WriteControl(websocket.TextMessage, []byte(winner), deadline); err != nil {
+		if err := ws.WriteMessage(websocket.TextMessage, []byte(winner)); err != nil {
 			t.Fatalf("could not send message over ws connection %v", err)
 		}
 
+		time.Sleep(100 * time.Millisecond)
 		AssertPlayerWin(t, store, winner)
 	})
 }
