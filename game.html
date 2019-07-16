@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Let's play poker</title>
+    <title>Lets play poker</title>
 </head>
 <body>
 <section id="game">
-    <div id="game">
-        <label for="player-count">Number of Players</label> 
-        <input type="number" id="player-count" />
+    <div id="game-start">
+        <label for="player-count">Number of players</label>
+        <input type="number" id="player-count"/>
         <button id="start-game">Start</button>
     </div>
 
@@ -18,17 +18,17 @@
         <button id="winner-button">Declare winner</button>
     </div>
 
-    <div id="blind-value"></div>
+    <div id="blind-value"/>
 </section>
+
 <section id="game-end">
-    <h1>Aother great game of poker everyone!</h1>
+    <h1>Another great game of poker everyone!</h1>
     <p><a href="/league">Go check the league table</a></p>
 </section>
 
 </body>
 <script type="application/javascript">
-
-    const startGame = document.getElementById('game')
+    const startGame = document.getElementById('game-start')
 
     const declareWinner = document.getElementById('declare-winner')
     const submitWinnerButton = document.getElementById('winner-button')
@@ -52,25 +52,23 @@
             const conn = new WebSocket('ws://' + document.location.host + '/ws')
 
             submitWinnerButton.onclick = event => {
-            conn.send(winnerInput.value)
-            gameEndContainer.hidden = false
-            gameContainer.hidden = true
-        }
+                conn.send(winnerInput.value)
+                gameEndContainer.hidden = false
+                gameContainer.hidden = true
+            }
 
-        conn.onclose = evt => {
-            blindContainer.innerText = 'Connection closed'
-        }
+            conn.onclose = evt => {
+                blindContainer.innerText = 'Connection closed'
+            }
 
-        conn.onmessage = evt => {
-            blindContainer.innerText = evt.data
-        }
+            conn.onmessage = evt => {
+                blindContainer.innerText = evt.data
+            }
 
-        conn.onopen = function () {
-            conn.send(numberOfPlayers)
+            conn.onopen = function () {
+                conn.send(numberOfPlayers)
+            }
         }
-    }
     })
-
-
 </script>
 </html>
