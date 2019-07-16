@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 	"fmt"
+	"os"
+	"io"
 )
 
 var dummySpyAlerter = &SpyBlindAlerter{}
@@ -26,7 +28,7 @@ type SpyBlindAlerter struct {
 	alerts []ScheduledAlert
 }
 
-func (s *SpyBlindAlerter) ScheduledAlertAt(duration time.Duration, amount int) {
+func (s *SpyBlindAlerter) ScheduledAlertAt(duration time.Duration, amount int, to io.Writer) {
 	s.alerts = append(s.alerts, ScheduledAlert{duration, amount})
 }
 
@@ -35,7 +37,7 @@ func TestGame_Start(t *testing.T) {
 		
 		blindAlerter := &SpyBlindAlerter{}
 		
-		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore)
+		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore, os.Stdout)
 
 		game.Start(5)
 		
@@ -60,7 +62,8 @@ func TestGame_Start(t *testing.T) {
 	t.Run("it schedules alerts for 7 players", func(t *testing.T) {
 		
 		blindAlerter := &SpyBlindAlerter{}
-		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore)
+		to := os.Stdout
+		game := poker.NewTexasHoldEm(blindAlerter, dummyPlayerStore, to)
 
 		game.Start(7)
 		
@@ -78,7 +81,8 @@ func TestGame_Start(t *testing.T) {
 
 func Test_Finish(t *testing.T) {
 	store := &poker.StubPlayerStore{}
-	game := poker.NewTexasHoldEm(dummySpyAlerter, store)
+	to := os.Stdout
+	game := poker.NewTexasHoldEm(dummySpyAlerter, store, to)
 	winner := "Ruth"
 
 	game.Finish(winner)
