@@ -22,10 +22,12 @@ var (
 func TestGETPlayers(t *testing.T) {
 
 	store := poker.StubPlayerStore{
-		map[string]int{
+		Scores: map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
-		}, nil, nil,
+		}, 
+		WinCalls: nil, 
+		League: nil,
 	}
 	server, _ := poker.NewPlayerServer(&store, dummyGame)
 
@@ -60,8 +62,8 @@ func TestGETPlayers(t *testing.T) {
 
 func TestPOSTWins(t *testing.T) {
 	store := poker.StubPlayerStore{
-		map[string]int{},
-		nil, nil,
+		Scores: map[string]int{},
+		WinCalls: nil, League: nil,
 	}
 	server, _ := poker.NewPlayerServer(&store, dummyGame)
 
@@ -109,10 +111,13 @@ func TestGame(t *testing.T) {
 		time.Sleep(100 * time.Millisecond)
 		assertFinishCalledWith(t, game, winner)
 	})
-	t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t *testing.T) {
-		store := &poker.StubPlayerStore{}
-		game := dummyGame
+	t.Run("start 3 player game, send blind alert on WS + finish with 'Chris' winner",
+			 func(t *testing.T) {
+		wantedBlindAlert := "Blind is 100"
 		winner := "Chris"
+		store := &poker.StubPlayerStore{}
+		game := &GameSpy{BlindAlert: []byte(wantedBlindAlert)}
+		
 		playerServer := mustMakePlayerServer(t, store, game)
 
 		server := httptest.NewServer(playerServer)
@@ -127,6 +132,9 @@ func TestGame(t *testing.T) {
 		time.Sleep(10* time.Millisecond)
 		assertGameStartedWith(t, game, 3)
 		assertFinishCalledWith(t, game, winner)
+
+		timeout := (time.Duration(10) * time.Millisecond)
+		within(t, timeout, func() {assertWebsocketGotMsg(t, ws, wantedBlindAlert)})
 	})
 }
 
@@ -315,5 +323,30 @@ func assertFinishCalledWith(t *testing.T, game *GameSpy, want string) {
 	got := game.FinishedWith 
 	if got != want {
 		t.Errorf("got %s winner, but wanted %s", got, want)
+	}
+}
+
+func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, want string) {
+	_, got, _ := ws.ReadMessage()
+
+	if string(got) != want {
+		t.Errorf("got blind alert %q, want %q", string(got), string(want))
+	}
+}
+
+func within(t *testing.T, d time.Duration, assert func()) {
+	t.Helper()
+
+	done := make(chan struct{}, 1)
+
+	go func() {
+		assert()
+		done <- struct{}{}
+	}()
+
+	select {
+	case <- time.After(d):
+		t.Error("timed out")
+	case <-done:
 	}
 }
