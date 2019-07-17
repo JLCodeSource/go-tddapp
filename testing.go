@@ -5,30 +5,27 @@ import (
 	"testing"
 )
 
-// jsonContentType refers to the JSON http content header
-const jsonContentType = "application/json"
-
 // StubPlayerStore is a spy stub mock for PlayerStore
 type StubPlayerStore struct {
-	scores   map[string]int
-	winCalls []string
-	league   League
+	Scores   map[string]int
+	WinCalls []string
+	League   []Player
 }
 
 // GetPlayerScore returns the spy store score
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.scores[name]
+	score := s.Scores[name]
 	return score
 }
 
 // GetLeague returns the spy store league of Players[]
 func (s *StubPlayerStore) GetLeague() League {
-	return s.league
+	return s.League
 }
 
 // PostRecordWin adds to the wins in winCalls
 func (s *StubPlayerStore) PostRecordWin(name string) error {
-	s.winCalls = append(s.winCalls, name)
+	s.WinCalls = append(s.WinCalls, name)
 	return nil
 }
 
@@ -69,14 +66,14 @@ func AssertLeague(t *testing.T, got, want League) {
 func AssertPlayerWin(t *testing.T, store *StubPlayerStore, winner string) {
 	t.Helper()
 
-	gotLen := len(store.winCalls)
+	gotLen := len(store.WinCalls)
 	wantLen := 1
 
 	if gotLen != wantLen {
 		t.Fatalf("got %d calls to RecordWin want %d", gotLen, wantLen)
 	}
 
-	gotWinner := store.winCalls[0]
+	gotWinner := store.WinCalls[0]
 	if gotWinner != winner {
 		t.Errorf("did not store correct winner got '%s' want '%s",
 			gotWinner, winner)

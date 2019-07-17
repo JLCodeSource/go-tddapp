@@ -25,6 +25,9 @@ func (g *GameSpy) Finish(winner string) {
 	g.FinishedWith = winner
 }
 
+func userSends(messages ...string) io.Reader {
+	return strings.NewReader(strings.Join(messages, "\n"))
+}
 
 func TestCLI(t *testing.T) {
 
@@ -32,7 +35,7 @@ func TestCLI(t *testing.T) {
 
 	t.Run("it prompts the user to enter the number of players and starts the game", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
-		in := strings.NewReader("7\nBob wins")
+		in := userSends("7", "Bob wins")
 		game := &GameSpy{}
 
 		cli := poker.NewCLI(in, stdout, game)
@@ -48,7 +51,7 @@ func TestCLI(t *testing.T) {
 
 	t.Run("finish game with Chris as winner", func(t *testing.T) {
 
-		in := strings.NewReader("1\nChris wins\n")
+		in := userSends("1", "Chris wins")
 		game := &GameSpy{}
 
 		cli := poker.NewCLI(in, dummyStdOut, game)
@@ -61,7 +64,7 @@ func TestCLI(t *testing.T) {
 
 	t.Run("prints error on non-numeric value entered + does not start", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
-		in := strings.NewReader("blah\n")
+		in := userSends("blah")
 		game := &GameSpy{}
 
 		cli := poker.NewCLI(in, stdout, game)
@@ -75,7 +78,7 @@ func TestCLI(t *testing.T) {
 
 	t.Run("prints an error if non-name wins entered", func (t *testing.T) {
 		stdout := &bytes.Buffer{}
-		in := strings.NewReader("1\nLloyd is a killer\n")
+		in := userSends("1", "Lloyd is a killer")
 		game := &GameSpy{}
 		cli := poker.NewCLI(in, stdout, game)
 		cli.PlayPoker()

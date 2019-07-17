@@ -13,7 +13,7 @@ type FileSystemPlayerStore struct {
 	league   League
 }
 
-// NewFileSystemPlayerStore is a constructor method for the FielSystemPlayerStore
+// NewFileSystemPlayerStore is a constructor method for the FileSystemPlayerStore
 func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 
 	err := initializePlayerDBFile(file)
@@ -29,7 +29,7 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 	}
 
 	return &FileSystemPlayerStore{
-		database: json.NewEncoder(&tape{file}),
+		database: json.NewEncoder(&Tape{file}),
 		league:   league,
 	}, nil
 }

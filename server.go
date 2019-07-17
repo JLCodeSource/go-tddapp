@@ -36,7 +36,7 @@ type PlayerServer struct {
 }
 
 // NewPlayerServer instantiates a new PlayerServer
-func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
+func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 	p := new(PlayerServer)
 
 	tmpl, err := template.ParseFiles("game.html")
