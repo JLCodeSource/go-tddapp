@@ -108,7 +108,6 @@ func TestGame(t *testing.T) {
 		writeWSMessage(t, ws, "3")
 		writeWSMessage(t, ws, winner)
 
-		time.Sleep(100 * time.Millisecond)
 		assertFinishCalledWith(t, game, winner)
 	})
 	t.Run("start 3 player game, send blind alert on WS + finish with 'Chris' winner",
@@ -129,7 +128,6 @@ func TestGame(t *testing.T) {
 		writeWSMessage(t, ws, "3")
 		writeWSMessage(t, ws, winner)
 
-		time.Sleep(10* time.Millisecond)
 		assertGameStartedWith(t, game, 3)
 		assertFinishCalledWith(t, game, winner)
 
@@ -306,24 +304,40 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) []poker.Player {
 
 func assertGameStartedWith(t *testing.T, game *GameSpy, want int) {
 	t.Helper()
+
+	passed := retryUntil(500 * time.Millisecond, func() bool {
+		return game.StartedWith == want
+	})
+	
 	if game.StartCalled == false {
 		t.Errorf("game should have started but did not start")
 	}
 	got := game.StartedWith
-	if got != want {
+	if !passed {
 		t.Errorf("got %d players, but wanted %d", got, want)
 	}
 }
 
-func assertFinishCalledWith(t *testing.T, game *GameSpy, want string) {
+func assertFinishCalledWith(t *testing.T, game *GameSpy, winner string) {
 	t.Helper()
+
+	passed := retryUntil(500 * time.Millisecond, func() bool {
+		return game.FinishedWith == winner
+	})
+
+	if !passed {
+		t.Errorf("expected finish called, but finish was not called")
+	}
+
 	if game.FinishCalled == false {
 		t.Errorf("game should have finished but did not finish")
 	}
+	
 	got := game.FinishedWith 
-	if got != want {
-		t.Errorf("got %s winner, but wanted %s", got, want)
+	if got != winner {
+		t.Errorf("got %s winner, but wanted %s", got, winner)
 	}
+
 }
 
 func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, want string) {
@@ -349,4 +363,14 @@ func within(t *testing.T, d time.Duration, assert func()) {
 		t.Error("timed out")
 	case <-done:
 	}
+}
+
+func retryUntil(d time.Duration, f func() bool) bool {
+	deadline := time.Now().Add(d)
+	for time.Now().Before(deadline) {
+		if f() {
+			return true
+		}
+	}
+	return false
 }
