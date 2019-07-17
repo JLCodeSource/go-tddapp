@@ -94,6 +94,7 @@ func TestGame(t *testing.T) {
 	t.Run("when we get a message over a websocket it is a winner", func(t *testing.T) {
 		store := &poker.StubPlayerStore{}
 		winner := "Ruth"
+		game := dummyGame
 		playerServer := mustMakePlayerServer(t, store, dummyGame)
 		server := httptest.NewServer(playerServer)
 		defer server.Close()
@@ -102,10 +103,11 @@ func TestGame(t *testing.T) {
 		ws := mustDialWS(t, wsURL)
 		defer ws.Close()
 
+		writeWSMessage(t, ws, "3")
 		writeWSMessage(t, ws, winner)
 
 		time.Sleep(100 * time.Millisecond)
-		poker.AssertPlayerWin(t, store, winner)
+		assertFinishCalledWith(t, game, winner)
 	})
 	t.Run("start game with 3 players and finish game with 'Chris' as winner", func(t *testing.T) {
 		store := &poker.StubPlayerStore{}
@@ -133,12 +135,12 @@ func TestLeague(t *testing.T) {
 	t.Run("it returns league table as JSON", func(t *testing.T) {
 
 		wantedLeague := []poker.Player{
-			{"Cleo", 32},
-			{"Chris", 20},
-			{"Trevor", 12},
+			{Name: "Cleo", Wins: 32},
+			{Name: "Chris", Wins: 20},
+			{Name: "Trevor", Wins: 12},
 		}
 
-		store := poker.StubPlayerStore{nil, nil, wantedLeague}
+		store := poker.StubPlayerStore{Scores: nil, WinCalls: nil, League: wantedLeague}
 		server, _ := poker.NewPlayerServer(&store, dummyGame)
 
 		request := newLeagueRequest()

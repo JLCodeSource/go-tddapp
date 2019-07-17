@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"html/template"
 	websocket "github.com/gorilla/websocket"
+	"strconv"
+	"io/ioutil"
 )
 
 var wsUpgrader = websocket.Upgrader{
@@ -33,6 +35,7 @@ type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 	template *template.Template
+	game Game
 }
 
 // NewPlayerServer instantiates a new PlayerServer
@@ -47,6 +50,7 @@ func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 
 	p.template = tmpl
 	p.store = store
+	p.game = game
 
 	router := http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
@@ -71,8 +75,13 @@ func (p *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
 func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 
 	conn, _ := wsUpgrader.Upgrade(w, r, nil)
+
+	_, numberOfPlayersMsg, _ := conn.ReadMessage()
+	numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
+	p.game.Start(numberOfPlayers, ioutil.Discard) //TODO: don't discard blinds
+
 	_, winnerMsg, _ := conn.ReadMessage()
-	p.store.PostRecordWin(string(winnerMsg)) 
+	p.game.Finish(string(winnerMsg)) 
 
 }
 
