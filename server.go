@@ -8,6 +8,7 @@ import (
 	websocket "github.com/gorilla/websocket"
 	"strconv"
 	"io/ioutil"
+	"log"
 )
 
 var wsUpgrader = websocket.Upgrader{
@@ -38,6 +39,10 @@ type PlayerServer struct {
 	game Game
 }
 
+type playerServerWS struct {
+	*websocket.Conn
+}
+
 // NewPlayerServer instantiates a new PlayerServer
 func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 	p := new(PlayerServer)
@@ -63,6 +68,39 @@ func NewPlayerServer(store PlayerStore, game Game) (*PlayerServer, error) {
 	return p, nil
 }
 
+func newPlayerServerWS(w http.ResponseWriter, r *http.Request) *playerServerWS {
+
+	conn, err := wsUpgrader.Upgrade(w, r, nil)
+
+	if err != nil {
+		log.Printf("problem upgrading connection to WebSocket %v\n", err)
+	}
+
+	return &playerServerWS{conn}
+
+}
+
+func (w *playerServerWS) WaitForMsg() string {
+	_, msg, err := w.ReadMessage()
+	if err != nil {
+		log.Printf("error reading from websocket %v\n", err)
+	}
+	return string(msg)
+}
+
+func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
+
+	ws := newPlayerServerWS(w, r)
+
+	numberOfPlayersMsg := ws.WaitForMsg()
+	numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
+	p.game.Start(numberOfPlayers, ioutil.Discard) //TODO: don't discard blinds
+
+	winnerMsg := ws.WaitForMsg()
+	p.game.Finish(string(winnerMsg)) 
+
+}
+
 // GetLeague returns the League
 func (p *PlayerServer) GetLeague() League {
 	return nil
@@ -70,19 +108,6 @@ func (p *PlayerServer) GetLeague() League {
 
 func (p *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
 	p.template.Execute(w, nil)
-}
-
-func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
-
-	conn, _ := wsUpgrader.Upgrade(w, r, nil)
-
-	_, numberOfPlayersMsg, _ := conn.ReadMessage()
-	numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
-	p.game.Start(numberOfPlayers, ioutil.Discard) //TODO: don't discard blinds
-
-	_, winnerMsg, _ := conn.ReadMessage()
-	p.game.Finish(string(winnerMsg)) 
-
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
