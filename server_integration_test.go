@@ -47,8 +47,8 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 		got := getLeagueFromResponse(t, response.Body)
 		want := []poker.Player{
-			{"Bob", 5},
-			{"Pepper", 3},
+			{Name: "Bob", Wins: 5},
+			{Name: "Pepper", Wins: 3},
 		}
 		poker.AssertLeague(t, got, want)
 	})

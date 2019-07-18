@@ -2,7 +2,7 @@ package poker
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
 	"sort"
 )
@@ -75,7 +75,7 @@ func FileSystemStoreFromFile(filename string) (*FileSystemPlayerStore, func(), e
 	closeFunc := func() {
 		e := db.Close()
 		if e != nil {
-			fmt.Errorf(string(ErrFileClose))
+			log.Printf(string(ErrFileClose))
 		}
 	}
 	store, err := NewFileSystemPlayerStore(db)

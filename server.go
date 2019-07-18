@@ -93,7 +93,7 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 
 	numberOfPlayersMsg := ws.WaitForMsg()
 	numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
-	p.game.Start(numberOfPlayers, ws) //TODO: don't discard blinds
+	p.game.Start(numberOfPlayers, ws) 
 
 	winnerMsg := ws.WaitForMsg()
 	p.game.Finish(string(winnerMsg)) 
@@ -108,11 +108,6 @@ func (w *playerServerWS) Write(p []byte) (n int, err error) {
 	}
 
 	return len(p), nil
-}
-
-// GetLeague returns the League
-func (p *PlayerServer) GetLeague() League {
-	return nil
 }
 
 func (p *PlayerServer) gameHandler(w http.ResponseWriter, r *http.Request) {
