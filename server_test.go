@@ -1,13 +1,13 @@
 package poker_test
 
 import (
+	websocket "github.com/gorilla/websocket"
+	"github.com/vetch101/go-tddapp"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	websocket "github.com/gorilla/websocket"
 	"time"
-	"github.com/vetch101/go-tddapp"
 )
 
 // jsonContentType refers to the JSON http content header
@@ -16,15 +16,16 @@ const jsonContentType = "application/json"
 var (
 	dummyGame = &GameSpy{}
 )
+
 func TestGETPlayers(t *testing.T) {
 
 	store := poker.StubPlayerStore{
 		Scores: map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
-		}, 
-		WinCalls: nil, 
-		League: nil,
+		},
+		WinCalls: nil,
+		League:   nil,
 	}
 	server, _ := poker.NewPlayerServer(&store, dummyGame)
 
@@ -59,7 +60,7 @@ func TestGETPlayers(t *testing.T) {
 
 func TestPOSTWins(t *testing.T) {
 	store := poker.StubPlayerStore{
-		Scores: map[string]int{},
+		Scores:   map[string]int{},
 		WinCalls: nil, League: nil,
 	}
 	server, _ := poker.NewPlayerServer(&store, dummyGame)
@@ -78,7 +79,6 @@ func TestPOSTWins(t *testing.T) {
 	})
 
 }
-
 
 func mustDialWS(t *testing.T, url string) *websocket.Conn {
 	t.Helper()
@@ -137,10 +137,10 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) []poker.Player {
 func assertGameStartedWith(t *testing.T, game *GameSpy, want int) {
 	t.Helper()
 
-	passed := retryUntil(500 * time.Millisecond, func() bool {
+	passed := retryUntil(500*time.Millisecond, func() bool {
 		return game.StartedWith == want
 	})
-	
+
 	if game.StartCalled == false {
 		t.Errorf("game should have started but did not start")
 	}
@@ -153,7 +153,7 @@ func assertGameStartedWith(t *testing.T, game *GameSpy, want int) {
 func assertFinishCalledWith(t *testing.T, game *GameSpy, winner string) {
 	t.Helper()
 
-	passed := retryUntil(500 * time.Millisecond, func() bool {
+	passed := retryUntil(500*time.Millisecond, func() bool {
 		return game.FinishedWith == winner
 	})
 
@@ -164,8 +164,8 @@ func assertFinishCalledWith(t *testing.T, game *GameSpy, winner string) {
 	if game.FinishCalled == false {
 		t.Errorf("game should have finished but did not finish")
 	}
-	
-	got := game.FinishedWith 
+
+	got := game.FinishedWith
 	if got != winner {
 		t.Errorf("got %s winner, but wanted %s", got, winner)
 	}
@@ -191,7 +191,7 @@ func within(t *testing.T, d time.Duration, assert func()) {
 	}()
 
 	select {
-	case <- time.After(d):
+	case <-time.After(d):
 		t.Error("timed out")
 	case <-done:
 	}

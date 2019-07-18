@@ -1,14 +1,13 @@
 package poker_test
 
 import (
-	"testing"
 	"github.com/vetch101/go-tddapp"
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"testing"
 	"time"
 )
-
 
 func TestGame(t *testing.T) {
 	t.Run("GET /game returns 200", func(t *testing.T) {
@@ -39,27 +38,27 @@ func TestGame(t *testing.T) {
 		assertFinishCalledWith(t, game, winner)
 	})
 	t.Run("start 3 player game, send blind alert on WS + finish with 'Chris' winner",
-			 func(t *testing.T) {
-		wantedBlindAlert := "Blind is 100"
-		winner := "Chris"
-		store := &poker.StubPlayerStore{}
-		game := &GameSpy{BlindAlert: []byte(wantedBlindAlert)}
-		
-		playerServer := mustMakePlayerServer(t, store, game)
+		func(t *testing.T) {
+			wantedBlindAlert := "Blind is 100"
+			winner := "Chris"
+			store := &poker.StubPlayerStore{}
+			game := &GameSpy{BlindAlert: []byte(wantedBlindAlert)}
 
-		server := httptest.NewServer(playerServer)
-		ws := mustDialWS(t, "ws" + strings.TrimPrefix(server.URL, "http") + "/ws")
+			playerServer := mustMakePlayerServer(t, store, game)
 
-		defer server.Close()
-		defer ws.Close()
+			server := httptest.NewServer(playerServer)
+			ws := mustDialWS(t, "ws"+strings.TrimPrefix(server.URL, "http")+"/ws")
 
-		writeWSMessage(t, ws, "3")
-		writeWSMessage(t, ws, winner)
+			defer server.Close()
+			defer ws.Close()
 
-		assertGameStartedWith(t, game, 3)
-		assertFinishCalledWith(t, game, winner)
+			writeWSMessage(t, ws, "3")
+			writeWSMessage(t, ws, winner)
 
-		timeout := (time.Duration(10) * time.Millisecond)
-		within(t, timeout, func() {assertWebsocketGotMsg(t, ws, wantedBlindAlert)})
-	})
+			assertGameStartedWith(t, game, 3)
+			assertFinishCalledWith(t, game, winner)
+
+			timeout := (time.Duration(10) * time.Millisecond)
+			within(t, timeout, func() { assertWebsocketGotMsg(t, ws, wantedBlindAlert) })
+		})
 }

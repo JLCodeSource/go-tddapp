@@ -1,9 +1,9 @@
 package poker_test
 
 import (
+	"github.com/vetch101/go-tddapp"
 	"io/ioutil"
 	"testing"
-	"github.com/vetch101/go-tddapp"
 )
 
 func TestTape_Write(t *testing.T) {

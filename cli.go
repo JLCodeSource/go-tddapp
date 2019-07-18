@@ -2,18 +2,18 @@ package poker
 
 import (
 	"bufio"
-	"io"
-	"strings"
 	"fmt"
+	"io"
 	"strconv"
+	"strings"
 )
 
 // CLI is the playerstore and input reader for the commandline version
 type CLI struct {
 	//PlayerStore PlayerStore
-	in          *bufio.Scanner
-	out			io.Writer
-	game		Game
+	in   *bufio.Scanner
+	out  io.Writer
+	game Game
 }
 
 // PlayerPrompt is the prompt for number of players
@@ -25,8 +25,8 @@ const BadWinnerInputMsg = "You entered an incorrect value. Please enter '{Player
 // NewCLI is a constructor for playerStore
 func NewCLI(in io.Reader, out io.Writer, game Game) *CLI {
 	return &CLI{
-		in:          bufio.NewScanner(in),
-		out: 		out,
+		in:   bufio.NewScanner(in),
+		out:  out,
 		game: game,
 	}
 }

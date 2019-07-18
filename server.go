@@ -3,16 +3,16 @@ package poker
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"html/template"
 	websocket "github.com/gorilla/websocket"
-	"strconv"
+	"html/template"
 	"log"
+	"net/http"
+	"strconv"
 )
 
 var wsUpgrader = websocket.Upgrader{
-		ReadBufferSize: 1024,
-		WriteBufferSize: 1024,
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 const htmlTemplatePath = "game.html"
@@ -35,7 +35,7 @@ type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 	template *template.Template
-	game Game
+	game     Game
 }
 
 type playerServerWS struct {
@@ -93,10 +93,10 @@ func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 
 	numberOfPlayersMsg := ws.WaitForMsg()
 	numberOfPlayers, _ := strconv.Atoi(string(numberOfPlayersMsg))
-	p.game.Start(numberOfPlayers, ws) 
+	p.game.Start(numberOfPlayers, ws)
 
 	winnerMsg := ws.WaitForMsg()
-	p.game.Finish(string(winnerMsg)) 
+	p.game.Finish(string(winnerMsg))
 
 }
 

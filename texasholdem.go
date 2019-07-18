@@ -1,23 +1,23 @@
 package poker
 
 import (
-	"time"
 	"io"
+	"time"
 )
 
-// TexasHoldEm is a struct containing alerter (a BlindAlerter) 
+// TexasHoldEm is a struct containing alerter (a BlindAlerter)
 // and store (PlayerStore)
 type TexasHoldEm struct {
-	alerter BlindAlerter
-	store PlayerStore
+	alerter           BlindAlerter
+	store             PlayerStore
 	alertsDestination io.Writer
 }
 
 // NewTexasHoldEm returns a pointer to a TexasHoldEm struct
 func NewTexasHoldEm(alerter BlindAlerter, store PlayerStore) *TexasHoldEm {
 	return &TexasHoldEm{
-		alerter:alerter,
-		store:store,
+		alerter: alerter,
+		store:   store,
 	}
 }
 
@@ -25,7 +25,7 @@ func NewTexasHoldEm(alerter BlindAlerter, store PlayerStore) *TexasHoldEm {
 func (t *TexasHoldEm) Start(numberOfPlayers int, alertsDestination io.Writer) {
 	blinds := []int{100, 200, 300, 400, 500, 600, 800, 1000, 2000, 4000, 8000}
 	blindTime := 0 * time.Second
-	blindIncrement := time.Duration(5 + numberOfPlayers) * time.Second
+	blindIncrement := time.Duration(5+numberOfPlayers) * time.Second
 
 	for _, blind := range blinds {
 		t.alerter.ScheduledAlertAt(blindTime, blind, alertsDestination)

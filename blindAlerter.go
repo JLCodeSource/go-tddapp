@@ -1,9 +1,9 @@
 package poker
 
 import (
-	"time"
 	"fmt"
 	"io"
+	"time"
 )
 
 //BlindAlerter interface sets a time and amount
@@ -25,4 +25,3 @@ func Alerter(duration time.Duration, amount int, alertsDestination io.Writer) {
 		fmt.Fprintf(alertsDestination, "Blind is now %d\n", amount)
 	})
 }
-

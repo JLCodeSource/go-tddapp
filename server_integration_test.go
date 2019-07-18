@@ -1,12 +1,11 @@
 package poker_test
 
 import (
+	"github.com/vetch101/go-tddapp"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"github.com/vetch101/go-tddapp"
 )
-
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 

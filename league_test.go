@@ -1,10 +1,10 @@
 package poker_test
 
 import (
-	"testing"
 	"github.com/vetch101/go-tddapp"
 	"net/http"
 	"net/http/httptest"
+	"testing"
 )
 
 func TestLeague(t *testing.T) {

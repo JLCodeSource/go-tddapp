@@ -29,7 +29,7 @@ const (
 	// ErrEncode means there was an error during json encoding
 	ErrEncode = Err("problem encoding json")
 
-	// ErrBadPlayerInput is an error for bad inputs 
+	// ErrBadPlayerInput is an error for bad inputs
 	ErrBadPlayerInput = "Bad value received for number of players, please try again with a number"
 )
 

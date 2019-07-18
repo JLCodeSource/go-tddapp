@@ -1,12 +1,11 @@
 package poker_test
 
 import (
-	"testing"
 	"github.com/vetch101/go-tddapp"
-	"os"
 	"io/ioutil"
+	"os"
+	"testing"
 )
-
 
 func TestFileSystemStore(t *testing.T) {
 

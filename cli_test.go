@@ -1,17 +1,17 @@
 package poker_test
 
 import (
+	"bytes"
 	"github.com/vetch101/go-tddapp"
+	"io"
 	"strings"
 	"testing"
-	"bytes"
-	"io"
 )
 
 type GameSpy struct {
 	StartCalled bool
 	StartedWith int
-	BlindAlert []byte
+	BlindAlert  []byte
 
 	FinishCalled bool
 	FinishedWith string
@@ -62,7 +62,7 @@ func TestCLI(t *testing.T) {
 
 		assertGameFinished(t, game.FinishCalled)
 		assertGameWonBy(t, "Chris", game.FinishedWith)
-		
+
 	})
 
 	t.Run("prints error on non-numeric value entered + does not start", func(t *testing.T) {
@@ -79,13 +79,13 @@ func TestCLI(t *testing.T) {
 		assertMessageSentToUser(t, stdout, wantPrompt)
 	})
 
-	t.Run("prints an error if non-name wins entered", func (t *testing.T) {
+	t.Run("prints an error if non-name wins entered", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
 		in := userSends("1", "Lloyd is a killer")
 		game := &GameSpy{}
 		cli := poker.NewCLI(in, stdout, game)
 		cli.PlayPoker()
-		
+
 		assertGameStarted(t, game.StartCalled)
 		assertMessageSentToUser(t, stdout, poker.PlayerPrompt, poker.BadWinnerInputMsg)
 
